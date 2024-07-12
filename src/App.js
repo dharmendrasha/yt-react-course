@@ -16,6 +16,8 @@ function App() {
 
   const [isSave, setIsSave] = useState(true);
 
+  const [isDel, setIsDel] = useState(true);
+
   function addToTheList(task) {
     // is unique task
     const isAvailable = list.find(function (value) {
@@ -31,10 +33,20 @@ function App() {
 
     console.log({ list, task, tasks });
     updateList(tasks);
+    setIsDel(false);
   }
 
   const handleRemove = (indexToRemove) => {
     updateList(list.filter((_, index) => index !== indexToRemove));
+    setIsSave(true);
+    setTask("");
+  };
+
+  const deleteAll = () => {
+    updateList([]);
+    setIsDel(true);
+    setIsSave(true);
+    setTask("");
   };
 
   const handleEdit = (indexToEdit) => {
@@ -90,9 +102,29 @@ function App() {
         class="btn btn-warning"
         onClick={() => updateToTheList(task)}
         disabled={isSave}
+        style={{ cursor: "pointer" }}
       >
         Save
       </button>
+      {list.length ? (
+        <button
+          type="button btn-block btn-lg"
+          class="btn btn-info"
+          onClick={() => deleteAll(task)}
+          disabled={isDel}
+        >
+          Delete All
+        </button>
+      ) : (
+        <button
+          type="button btn-block btn-lg"
+          class="btn btn-info"
+          onClick={() => deleteAll(task)}
+          disabled="true"
+        >
+          Delete All
+        </button>
+      )}
 
       <br />
       <br />

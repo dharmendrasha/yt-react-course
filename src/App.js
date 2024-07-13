@@ -1,5 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.css'
+import { FloppyFill } from 'react-bootstrap-icons';
 import { useState } from 'react'
+import _ from 'underscore'
+import { removeValueFromArray, updateValueFromArray } from './util'
 
 /**
  * To Do application
@@ -27,8 +30,55 @@ function App() {
 
     const tasks = [...list, task]
 
-    console.log({list, task, tasks})
     updateList(tasks)
+  }
+
+  function deleteTask(task /* value */){
+    if(task.length === 0){
+      console.debug(`task is not type of string task is `, task)
+      throw Error(`task is not a type of string`)
+    }
+
+    
+
+
+    const isExists = list.findIndex((val) => val === task)
+
+
+    if(isExists === -1){
+      alert(`Task ${task} not found`);
+      return
+    }
+
+
+    const removedTask = removeValueFromArray(list, task)
+
+    updateList(removedTask)
+
+  }
+
+  const updateTask = (task) => {
+    if(task && task.length === 0){
+      console.debug(`task is empty`)
+      throw new Error(`task must have length more than 0`)
+    }
+
+
+    const isExists = list.findIndex((val) => val === task)
+
+
+    if(isExists === -1){
+      alert(`Task ${task} not found`);
+      return
+    }
+
+    const update = prompt(`Please enter update value`, task)
+    
+    const updatedArray = updateValueFromArray(list, task, update)
+
+    updateList(updatedArray)
+
+    
   }
 
   return (
@@ -53,7 +103,7 @@ placeholder="add task" aria-label="enter task" readonly />
   alert("please add a task")
   
 
-}} type="button btn-block btn-lg" class="btn btn-primary">+Add</button>
+}} type="button btn-block btn-lg" class="btn btn-primary"><FloppyFill />Add</button>
 
 <br/>
 <br/>
@@ -66,7 +116,11 @@ placeholder="add task" aria-label="enter task" readonly />
         <>
           <li 
           key={`li-${index}`}
-          class="list-group-item">{value}</li>
+          class="list-group-item">
+            {value}
+            <button onClick={() => deleteTask(value)} type="button" class="btn btn-danger">Delete</button>
+            <button onClick={() => updateTask(value)} type="button" class="btn btn-primary">Update</button>
+            </li>
         </>
       )
     })

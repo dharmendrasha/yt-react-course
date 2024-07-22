@@ -1,8 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.css'
-import { FloppyFill } from 'react-bootstrap-icons';
 import { useState } from 'react'
-import _ from 'underscore'
 import { removeValueFromArray, updateValueFromArray } from './util'
+import { CustomInput } from './components/input';
+import { CustomButtons } from './components/button';
+import { List } from './components/list';
 
 /**
  * To Do application
@@ -84,52 +85,24 @@ function App() {
   return (
     <div className='container'>
       <p class="h1">To Do App</p>
-
-{/* input box */}
-
-<input class="form-control" type="text" onInput={(event) => setTask(event.target.value)
-} value={task}
-placeholder="add task" aria-label="enter task" readonly />
-
-
-{/* add button */}
-<button onClick={() => {
-  if(task && task.length > 0){
+      <form onSubmit={(ev) => ev.preventDefault()}>
+<CustomInput placeholder="Add task" onInput={(task) => setTask(task)} />
+<CustomButtons label={'Add Task'} onClick={() => {
+   if(task && task.length > 0){
     addToTheList(task)
     setTask('')
     return
   }
-
   alert("please add a task")
-  
+}} />
 
-}} type="button btn-block btn-lg" class="btn btn-primary"><FloppyFill />Add</button>
+</form>
 
 <br/>
 <br/>
-{/* show list */}
-
 <ul class="list-group">
-  {
-    list.map(function(value, index){
-      return (
-        <>
-          <li 
-          key={`li-${index}`}
-          class="list-group-item">
-            {value}
-            <button onClick={() => deleteTask(value)} type="button" class="btn btn-danger">Delete</button>
-            <button onClick={() => updateTask(value)} type="button" class="btn btn-primary">Update</button>
-            </li>
-        </>
-      )
-    })
-  }  
+  <List list={list} deleteTask={deleteTask} updateTask={updateTask} />
 </ul>
-
-
-
-
     </div>
   );
 }

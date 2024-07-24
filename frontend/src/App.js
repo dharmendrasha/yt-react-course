@@ -1,9 +1,10 @@
-import 'bootstrap/dist/css/bootstrap.css'
-import { useState } from 'react'
-import { removeValueFromArray, updateValueFromArray } from './util'
-import { CustomInput } from './components/input';
-import { CustomButtons } from './components/button';
-import { List } from './components/list';
+import "bootstrap/dist/css/bootstrap.css";
+import { useEffect, useState } from "react";
+import { removeValueFromArray, updateValueFromArray } from "./util";
+import { CustomInput } from "./components/input";
+import { CustomButtons } from "./components/button";
+import { List } from "./components/list";
+import * as taskApi from './api/task'
 
 /**
  * To Do application
@@ -13,96 +14,97 @@ import { List } from './components/list';
  */
 
 function App() {
-  const [list, updateList] = useState([])
+  const [list, updateList] = useState([]);
 
-  const [task, setTask] = useState('')
-  
-  function addToTheList(task){
+  const [task, setTask] = useState("");
 
+  useEffect(() => {
+   
+    async function getList(){
+    const data = await taskApi.list()
+    updateList(data)
+   }
+
+   getList()
+
+  }, [])
+
+  async function addToTheList(task) {
     // is unique task
-    const isAvailable = list.find(function(value){
-      return value === task
-    })
+    const isAvailable = list.find(function (value) {
+      return value.name === task;
+    });
 
-    if(isAvailable){
-      alert("task " + task + ' is already in the queue')
-      return
+    if (isAvailable) {
+      alert("task " + task + " is already in the queue");
+      return;
     }
 
-    const tasks = [...list, task]
+    // api call
+    await taskApi.post(task)
+    const data = await taskApi.list()
+    updateList(data)
 
-    updateList(tasks)
   }
 
-  function deleteTask(task /* value */){
-    if(task.length === 0){
-      console.debug(`task is not type of string task is `, task)
-      throw Error(`task is not a type of string`)
+  async function deleteTask(task /* value */) {
+    if (task && task.length === 0) {
+      console.debug(`task is not type of string task is `, task);
+      throw Error(`task is not a type of string`);
     }
 
-    
+    await taskApi.del(task)
 
-
-    const isExists = list.findIndex((val) => val === task)
-
-
-    if(isExists === -1){
-      alert(`Task ${task} not found`);
-      return
-    }
-
-
-    const removedTask = removeValueFromArray(list, task)
-
-    updateList(removedTask)
-
+    const data = await taskApi.list()
+    updateList(data)
   }
 
   const updateTask = (task) => {
-    if(task && task.length === 0){
-      console.debug(`task is empty`)
-      throw new Error(`task must have length more than 0`)
+    if (task && task.length === 0) {
+      console.debug(`task is empty`);
+      throw new Error(`task must have length more than 0`);
     }
 
+    const isExists = list.findIndex((val) => val === task);
 
-    const isExists = list.findIndex((val) => val === task)
-
-
-    if(isExists === -1){
+    if (isExists === -1) {
       alert(`Task ${task} not found`);
-      return
+      return;
     }
 
-    const update = prompt(`Please enter update value`, task)
-    
-    const updatedArray = updateValueFromArray(list, task, update)
+    const update = prompt(`Please enter update value`, task);
 
-    updateList(updatedArray)
+    const updatedArray = updateValueFromArray(list, task, update);
 
-    
-  }
+    updateList(updatedArray);
+  };
+
+
+
 
   return (
-    <div className='container'>
+    <div className="container">
       <p class="h1">To Do App</p>
       <form onSubmit={(ev) => ev.preventDefault()}>
-<CustomInput placeholder="Add task" onInput={(task) => setTask(task)} />
-<CustomButtons label={'Add Task'} onClick={() => {
-   if(task && task.length > 0){
-    addToTheList(task)
-    setTask('')
-    return
-  }
-  alert("please add a task")
-}} />
+        <CustomInput placeholder="Add task" onInput={(task) => setTask(task)} />
+        <CustomButtons
+          label={"Add Task"}
+          onClick={() => {
+            if (task && task.length > 0) {
+              addToTheList(task);
+              setTask("");
+              return;
+            }
+            alert("please add a task");
+          }}
+        />
+      </form>
 
-</form>
-
-<br/>
-<br/>
-<ul class="list-group">
-  <List list={list} deleteTask={deleteTask} updateTask={updateTask} />
-</ul>
+      <br />
+      <br />
+      <ul class="list-group">
+        <List list={list} deleteTask={deleteTask} updateTask={updateTask} />
+      </ul>
     </div>
   );
 }

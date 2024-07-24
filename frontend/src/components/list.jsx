@@ -11,9 +11,9 @@ export const List = (props) => {
                       <li 
                       key={`li-${index}`}
                       class="list-group-item">
-                        {value}
-                          <CustomButtons label={"Delete"} onClick={() => props.deleteTask(value)} color="danger" />
-                          <CustomButtons label={"Update"} onClick={() => props.updateTask(value)} color="primary" />
+                        {value.name}
+                          <CustomButtons label={"Delete"} onClick={() => props.deleteTask(value._id)} color="danger" />
+                          <CustomButtons label={"Update"} onClick={() => props.updateTask(value._id)} color="primary" />
                         </li>
                     </>
                   )

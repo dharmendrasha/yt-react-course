@@ -13,7 +13,7 @@ export const List = (props) => {
                       class="list-group-item">
                         {value.name}
                           <CustomButtons label={"Delete"} onClick={() => props.deleteTask(value._id)} color="danger" />
-                          <CustomButtons label={"Update"} onClick={() => props.updateTask(value._id)} color="primary" />
+                          <CustomButtons label={"Update"} onClick={() => props.updateTask(value._id, value.name)} color="primary" />
                         </li>
                     </>
                   )

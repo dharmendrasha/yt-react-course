@@ -20,7 +20,11 @@ export const post = async (task) => {
 
 export const get = async (id) => {}
 
-export const put = async (id) => {}
+export const put = async (id, task) => {
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    await fetch(`${BACKEND_API}/${id}`, {method: 'put', body: JSON.stringify({task}), headers})
+}
 
 export const del = async (id) => {
     await fetch(`${BACKEND_API}/${id}`, { method: 'delete' })

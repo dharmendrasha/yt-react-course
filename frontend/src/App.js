@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.css";
 import { useEffect, useState } from "react";
-import { removeValueFromArray, updateValueFromArray } from "./util";
+import { updateValueFromArray } from "./util";
 import { CustomInput } from "./components/input";
 import { CustomButtons } from "./components/button";
 import { List } from "./components/list";
@@ -59,24 +59,21 @@ function App() {
     updateList(data)
   }
 
-  const updateTask = (task) => {
-    if (task && task.length === 0) {
+  const updateTask = async (id, value) => {
+    if (id && id.length === 0) {
       console.debug(`task is empty`);
       throw new Error(`task must have length more than 0`);
     }
 
-    const isExists = list.findIndex((val) => val === task);
+    const newTask = prompt(`Update task: ${value}`)
 
-    if (isExists === -1) {
-      alert(`Task ${task} not found`);
-      return;
+    if(!newTask){
+      return
     }
 
-    const update = prompt(`Please enter update value`, task);
-
-    const updatedArray = updateValueFromArray(list, task, update);
-
-    updateList(updatedArray);
+    await taskApi.put(id, newTask)
+    const data = await taskApi.list()
+    updateList(data)
   };
 
 

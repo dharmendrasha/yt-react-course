@@ -2,11 +2,12 @@ const express = require('express')
 const { z, ZodError } = require('zod')
 const { userModel } = require('../schema/User.schema')
 const { md5 } = require('../utils')
+const { generateToken } = require('../crypt/jwt.util')
 const router = express.Router()
 
 const zRegistration = z.object({
     email: z.string().email(),
-    password: z.string().max(8).min(1)
+    password: z.string()
 })
 
 router.post('/registration', async (req, res) => {
@@ -74,7 +75,7 @@ router.post('/login', async (req, res) => {
         }
 
 
-        const token = md5(`${data.email}:${data.password}`)
+        const token = generateToken({id: findOne._id, email: findOne.email })
 
         resp = {
             token 

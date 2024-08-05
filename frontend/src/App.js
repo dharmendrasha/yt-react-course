@@ -4,7 +4,7 @@ import { updateValueFromArray } from "./util";
 import { CustomInput } from "./components/input";
 import { CustomButtons } from "./components/button";
 import { List } from "./components/list";
-import * as taskApi from './api/task'
+import * as taskApi from "./api/task";
 
 /**
  * To Do application
@@ -19,15 +19,14 @@ function App() {
   const [task, setTask] = useState("");
 
   useEffect(() => {
-   
-    async function getList(){
-    const data = await taskApi.list()
-    updateList(data)
-   }
+    taskApi.setAuthToken();
+    async function getList() {
+      const data = await taskApi.list();
+      updateList(data);
+    }
 
-   getList()
-
-  }, [])
+    getList();
+  }, []);
 
   async function addToTheList(task) {
     // is unique task
@@ -41,10 +40,9 @@ function App() {
     }
 
     // api call
-    await taskApi.post(task)
-    const data = await taskApi.list()
-    updateList(data)
-
+    await taskApi.post(task);
+    const data = await taskApi.list();
+    updateList(data);
   }
 
   async function deleteTask(task /* value */) {
@@ -53,10 +51,10 @@ function App() {
       throw Error(`task is not a type of string`);
     }
 
-    await taskApi.del(task)
+    await taskApi.del(task);
 
-    const data = await taskApi.list()
-    updateList(data)
+    const data = await taskApi.list();
+    updateList(data);
   }
 
   const updateTask = async (id, value) => {
@@ -65,19 +63,16 @@ function App() {
       throw new Error(`task must have length more than 0`);
     }
 
-    const newTask = prompt(`Update task: ${value}`)
+    const newTask = prompt(`Update task: ${value}`);
 
-    if(!newTask){
-      return
+    if (!newTask) {
+      return;
     }
 
-    await taskApi.put(id, newTask)
-    const data = await taskApi.list()
-    updateList(data)
+    await taskApi.put(id, newTask);
+    const data = await taskApi.list();
+    updateList(data);
   };
-
-
-
 
   return (
     <div className="container">

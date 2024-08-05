@@ -2,34 +2,28 @@ const mongoose = require('mongoose')
 const express = require("express");
 const { taskModel } = require('./schema/Task.schema')
 const cors = require('cors');
-const AuthRouter = require('./routes/auth')
+const AuthRouter = require('./routes/auth');
+const { verifyToken } = require('./crypt/jwt.util');
 
 const { env } = process
 
-const secureToken = env['TOKEN']
+const jwtVerify =  async (req, res, next) => {
+    try{
+        const headers = req.headers
+    const jwt = headers['token']
 
-const userAuthenticateMiddleware1 =  async (req, res, next) => {
-    const headers = req.headers
-    const userPassedToken = headers['token']
+    const verify = verifyToken(jwt)
 
-    if(userPassedToken === secureToken){
-        next()
-        return
-    }
-        res.status(401).send("User is not authenticated")
-}
+    req.jwt = verify
 
-
-const userAuthenticateMiddleware2 =  async (req, res, next) => {
-   
-    const userPassedToken = headers['token']
-
-    if(userPassedToken === secureToken){
-        next()
+    next()
+    return
+    }catch(e){
+        console.error(e)
+        res.status(401).send("Not AUuthorized")
         return
     }
     
-    res.status(401).send("User is not authenticated")
 }
 
 const app = express()
@@ -48,6 +42,8 @@ app.use(express.urlencoded())
 app.use('/auth', AuthRouter)
 
 
+app.use(jwtVerify)
+
 //create
 app.post(
     '/create', 
@@ -61,8 +57,6 @@ app.post(
     app.get(
         
         '/',
-        userAuthenticateMiddleware1,
-        userAuthenticateMiddleware2,
         
         async (req/* incoming */, res /* outgoing */) => {
         
